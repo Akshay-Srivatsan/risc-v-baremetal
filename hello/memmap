@@ -1,0 +1,54 @@
+/* based on page 22 of the FE310-G002 Manual */
+OUTPUT_ARCH("riscv")
+
+ENTRY(_start)
+
+MEMORY {
+  flash(rx) : ORIGIN = 0x20010000, LENGTH = 0x400000
+  ram(rwx) : ORIGIN = 0x80000000, LENGTH = 0x4000
+}
+
+SECTIONS {
+  __stack_size = 2K;
+
+  .text : {
+    __code_start__ = .;
+    KEEP(*(.text.boot))
+    *(.text*)
+    __code_end__ = .;
+  } >flash AT>flash
+
+  . = ALIGN(4);
+  .rodata : {
+    *(.rodata*)
+  } >flash AT>flash
+
+  . = ALIGN(4);
+  .data : {
+    __data_start__ = .;
+    __data_start_flash__ = ABSOLUTE(.);
+    *(.data*)
+     __global_pointer$ = . + 0x800;
+    *(.sdata*)
+    __data_end__ = .;
+    __data_end_flash__ = ABSOLUTE(.);
+  } >ram AT>flash
+
+  . = ALIGN(4);
+  .bss : {
+    __bss_start__ = .;
+    *(.bss*)
+    *(COMMON)
+    __bss_end__ = .;
+    . = ALIGN(8);
+    __heap_start__ = .;
+  } > ram AT>ram
+
+  .stack ORIGIN(ram) + LENGTH(ram) - __stack_size :
+  {
+    __heap_end__ = .;
+    __stack_bottom__ = .;
+    . = __stack_size;
+    __stack_top__ = .;
+  } > ram AT>ram
+}
