@@ -3,6 +3,7 @@ TARGET=hello
 ELF=$(TARGET).elf
 LIST=$(TARGET).list
 BIN=$(TARGET).bin
+HEX=$(TARGET).hex
 
 SRC = $(wildcard *.c)
 ASM = $(wildcard *.S)
@@ -35,6 +36,15 @@ $(TARGET).elf: $(OBJ) memmap
 
 %.bin: %.elf %.list
 	$(OC) -O binary $< $@
+
+%.hex: %.elf %.list
+	$(OC) -O ihex $< $@
+
+.PHONY: install
+install: $(HEX)
+	@test -n "$(RISCV_MOUNT)" || (echo "Set the RISCV_MOUNT environment variable to the path at which your HiFive1 RevB board is mounted.  This will probably be under /media or /Volumes." && false)
+	cp $(HEX) $(RISCV_MOUNT)
+
 
 .PHONY: flash
 flash: $(BIN)

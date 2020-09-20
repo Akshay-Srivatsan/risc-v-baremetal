@@ -2,3 +2,4 @@
 *.list
 *.bin
 *.elf
+*.hex
