@@ -39,3 +39,19 @@ Note: this has only been tested on Linux (64-bit, 5.8.8) so far.  Let me know if
 
 [Getting Started Guide](https://sifive.cdn.prismic.io/sifive%2F4f5a7851-1b52-463b-a293-f352036bc809_hifive1b-getting-started-guide_v1.1.pdf)
 
+[RISC-V ABI](https://riscv.org/wp-content/uploads/2015/01/riscv-calling.pdf); table 18.2 is the most important part
+
+[RISC-V Assembly](https://www.imperialviolet.org/2016/12/31/riscv.html)
+
+[RISC-V Assembly Programmer's Manual](https://github.com/riscv/riscv-asm-manual/blob/master/riscv-asm.md)
+
+[RISC-V Reference Card](https://www.cl.cam.ac.uk/teaching/1617/ECAD+Arch/files/docs/RISCVGreenCardv8-20151013.pdf)
+
+The assembly language has some aliases which don't seem to be well-documented:
+
+- `jmp label` is an unconditional branch (`beq x0, x0, label`)
+- `call fn` is a function call (`jal ra, fn`, I think)
+- `ret` is a function return (`jmp ra`?)
+- `mv rd, rs` moves a value between registers (`add rd, rs, x0`)
+- `li 0x10000` loads an immediate (some combination of `lui` and other instructions)
+- `la label` loads an address (again, `lui` plus other instructions)
