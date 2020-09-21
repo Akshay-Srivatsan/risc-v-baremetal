@@ -3,7 +3,6 @@
 .globl _start
 _start:
   la sp, __stack_top__
-  li sp, 0x80001000
   la gp, __global_pointer$
 
   call _cstart
