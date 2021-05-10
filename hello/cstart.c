@@ -1,11 +1,11 @@
 void _cstart() {
-  extern int __data_start__, __data_start_flash__, __data_end_flash__, __bss_start__, __bss_end__;
+  extern int __data_start__, __data_start_flash__, __data_end__, __bss_start__, __bss_end__;
 
   int *data = &__data_start__;
+  int *data_end = &__data_end__;
   int *data_flash = &__data_start_flash__;
-  int *data_end_flash = &__data_end_flash__;
 
-  while (data_flash < data_end_flash) {
+  while (data < data_end) {
     *data++ = *data_flash++;
   }
 

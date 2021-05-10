@@ -15,40 +15,54 @@ SECTIONS {
     __code_start__ = .;
     KEEP(*(.text.boot))
     *(.text*)
+    *(.rodata*)
+    *(.srodata*)
+    . = ALIGN(4);
     __code_end__ = .;
-  } >flash AT>flash
+  } >flash
 
   . = ALIGN(4);
   .rodata : {
     *(.rodata*)
+    *(.srodata*)
   } >flash AT>flash
 
   . = ALIGN(4);
-  .data : {
+  .data 0x80000000 : AT (ADDR(.rodata) + SIZEOF(.rodata) ) {
+    __data_start_flash__ = LOADADDR(.data);
     __data_start__ = .;
-    __data_start_flash__ = ABSOLUTE(.);
     *(.data*)
      __global_pointer$ = . + 0x800;
     *(.sdata*)
+    *(.data*)
+    /* __global_pointer$ = . + 0x800;  */
     __data_end__ = .;
-    __data_end_flash__ = ABSOLUTE(.);
-  } >ram AT>flash
+  }
 
   . = ALIGN(4);
-  .bss : {
+  .bss ADDR(.data) + SIZEOF(.data) : {
     __bss_start__ = .;
     *(.bss*)
+    *(.sbss*)
     *(COMMON)
     __bss_end__ = .;
     . = ALIGN(8);
     __heap_start__ = .;
-  } > ram AT>ram
+  } > ram 
 
-  .stack ORIGIN(ram) + LENGTH(ram) - __stack_size :
+  /DISCARD/ : {
+    *(.comment)
+    *(.riscv.attributes)
+  }
+
+  .stack ORIGIN(ram) + LENGTH(ram) - __stack_size (NOLOAD) :
   {
     __heap_end__ = .;
     __stack_bottom__ = .;
     . = __stack_size;
     __stack_top__ = .;
   } > ram AT>ram
+
+  PROVIDE(__data_lma__ = LOADADDR(.data));
+  PROVIDE(__code_end__ = ADDR(.text) + SIZEOF(.text));
 }
